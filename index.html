@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find a Pair - Guards Red Edition</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(6, 200px); /* Fit all cards on one page */
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .card {
+            width: 200px;
+            height: 150px;
+            perspective: 1000px;
+        }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+        }
+        .card-front {
+            transform: rotateY(180deg);
+            background-size: cover;
+            background-position: center;
+        }
+        .card-back {
+            background: url('porsche-logo.jpg') no-repeat center;
+            background-size: cover;
+        }
+    </style>
+</head>
+<body>
+    <h1>Find a Pair - Guards Red Edition</h1>
+    <div class="game-container" id="gameContainer"></div>
+    <script>
+        const images = [
+            '911-SC-Coupé-kaufen-40.jpeg',
+            '964-CARRERA-2-CABRIOLET-kaufen-01.jpeg',
+            '991-CARRERA-GTS-01.jpeg',
+            '993 4s.jpg',
+            '1988 3.2.jpg',
+            '17944.jpg',
+            '18355.jpg',
+            'porsche-356-pre-a-01.jpeg',
+            'porsche-718-spyder-forsale01.jpeg',
+            'Porsche-911-997-GT2-RS-17.jpeg',
+            'Porsche-911-Cabrio-Oldtimer-kaufen-01.jpeg',
+            'PORSCHE-911-CARRERA-2.7-06.jpeg',
+            'Porsche-911-Carrera-3.2-5-2.jpg',
+            'porsche-911-sc-kaufen-01.jpeg',
+            'Porsche-911-Targa-rot-kaufen-01.jpeg',
+            'porsche-911-turbo-33-5-gang-01.jpeg',
+            'Porsche-911-TURBO-33-rot-kaufen-09.jpeg',
+            'PORSCHE-914-rot-kaufen-44.jpeg',
+            'porsche-964-carrera-2-kaufen-oldtimer-01.jpeg',
+            'Porsche-964-Carrera-Coupe-kaufen-Oldtimer-2.jpeg',
+            'Porsche-968-CS-Club-Sport-kaufen-gebraucht-Österreich-40.jpg',
+            'porsche-991-gt3-kaufen-01.jpeg',
+            'PORSCHE-993-CARRERA-4-kaufen-01.jpeg',
+            'Porsche-997-GT2-gebraucht-kaufen-6.jpeg',
+            'Porsche-997-Turbo-0-1.jpg'
+        ];
+
+        // Shuffle cards
+        let shuffledCards = [...images, ...images];
+        shuffledCards = shuffledCards.sort(() => Math.random() - 0.5);
+
+        const gameContainer = document.getElementById('gameContainer');
+        let flippedCards = [];
+        let matchedPairs = 0;
+
+        function createCard(image) {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-front" style="background-image: url('${image}')"></div>
+                    <div class="card-back"></div>
+                </div>
+            `;
+            card.addEventListener('click', () => flipCard(card, image));
+            return card;
+        }
+
+        function flipCard(card, image) {
+            if (flippedCards.length === 2 || card.classList.contains('flipped')) return;
+            card.classList.add('flipped');
+            flippedCards.push({ card, image });
+            if (flippedCards.length === 2) checkMatch();
+        }
+
+        function checkMatch() {
+            const [first, second] = flippedCards;
+            if (first.image === second.image) {
+                matchedPairs++;
+                flippedCards = [];
+                if (matchedPairs === images.length) {
+                    setTimeout(() => alert('Congratulations! You found all pairs!'), 500);
+                }
+            } else {
+                setTimeout(() => {
+                    first.card.classList.remove('flipped');
+                    second.card.classList.remove('flipped');
+                    flippedCards = [];
+                }, 1000);
+            }
+        }
+
+        // Load the game
+        shuffledCards.forEach(image => gameContainer.appendChild(createCard(image)));
+    </script>
+</body>
+</html>
